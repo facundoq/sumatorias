@@ -1,0 +1,453 @@
+% Falta:
+% Qué pasa al agregar un término o quitar un término (caso especial del cero)
+% Como modificar los índices (y el término de forma acorde) dejando a la sumatoria con el mismo resultado
+% dibujos para la parte  de cortar sumatorias o cortarlas
+% sumatorias anidadas: introducción
+% sumatorias anidadas: mostrar casos fáciles (sin dependencias), recomendar resolver desde adentro
+% Sumatorias anidadas: mostrar la dependencia, mostrar contra ejemplos donde no se puede simplificar la sumatoria fácilmente, mostrar casos difíciles, recomendar resolver desde adentro
+% sumatorias anidadas: analogía con for anidados
+% Explicar de dónde salen algunas de las fórmulas para sumatorias comunes y probarlas (la de la sumatoria de los primeros números naturales es fácil y se puede ver geométricamente)
+% ejemplos más relevantes
+
+\documentclass[11pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+
+\title{\textbf{Repaso de sumatorias}}
+\author{Cátedra de Algoritmos y estructuras de datos, UNLP}
+\date{1 de octubre, 2012}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Sumatorias}
+
+\subsection{Introducción}
+La notación de sumatoria es simplemente una forma de \textit{escribir sumas complejas de manera más sencilla, compacta y fácil de manipular}. Generalmente, cuando tenemos una sumatoria que representa el tiempo de ejecución de un algoritmo, buscamos \textit{resolver} la sumatoria, es decir, expresar su resultado de una forma más simple. Lo esencial al resolverlas es nunca olvidar que lo único que hace es sumar números, la operación aritmética más fácil de aplicar.
+
+\subsection{Notación}
+
+\begin{equation*}
+	\sum_{i=valorInicial}^{valorFinal}{a_i}
+\end{equation*}
+
+Esto nos dice que tenemos que sumar el valor del término, $a_i$, para los valores de $i$, desde $valorInicial$ hasta $valorFinal$. El valor del término, $a_i$ no es un número fijo, sino que es un valor que depende de la variable de índice $i$. Por ejemplo, la sumatoria de los primeros cuatro números naturales se escribe
+
+\begin{equation*}
+  \sum_{i=1}^4{i}=1+2+3+4=10\\
+\end{equation*}
+
+y tiene como valor inicial a $1$, como valor final a $4$, como variable de índice a $i$ (abajo del símbolo $\sum$, donde dice $i=1$), $a_i=i$ (a la derecha del símbolo $\sum$), y el resultado es 10. Si cambiamos los valores iniciales y finales, generalmente llamados los \textit{límites} de la sumatoria, tenemos:
+
+\begin{equation*}
+  \sum_{i=3}^5{i}=3+4+5=12\\
+\end{equation*}
+
+Con valor inicial $3$, valor final $5$, variable de índice $i$, $a_i=i$, y 12 de resultado. Cambiando el valor del término por $i^2$, y volviendo a los valores iniciales y finales del primer ejemplo,  tenemos:
+
+\begin{equation*}
+  \sum_{i=1}^4{i^2}=1^2+2^2+3^2+4^2=1+4+9+16=30\\
+\end{equation*}
+
+Con $a_i=i^2$, y 30 de resultado. Si cambiamos nuevamente el valor del término:
+
+\begin{equation*}
+  \sum_{i=1}^4{(i*2+1)}=(1*2+1)+(2*2+1)+(3*2+1)+(4*2+1)=3+5+7+9=24\\
+\end{equation*}
+
+La sumatoria tiene como valor inicial a $1$, como valor final a $4$, variable de índice a $i$, $a_i=i*2+1$, y su resultado es 24. Finalmente,
+
+\begin{equation*}
+  \sum_{i=1}^4{2}=2+2+2+2=8\\
+\end{equation*}
+
+Tenemos la misma variable de índice y los mismos valores iniciales y finales que antes, pero el valor del término es constante ($a_i=2$), por ende simplemente se suma 4 veces. 
+
+\subsubsection{Ejemplos}
+
+\begin{gather*}
+\sum_{i=1}^4{(i+1)}=2+3+4+5 \hspace{4em} \sum_{i=2}^5{(i-1)}=1+2+3+4 \\
+\sum_{i=1}^{1350}{i}=1+\dots+1350  \hspace{4em} \sum_{i=1}^4{2^i}=2^1+2^2+2^3+2^4=2+4+8+16 \\
+\sum_{i=2}^5{2}=2+2+2+2=8 \hspace{4em}  \sum_{i=1}^4{c}=c+c+c+c \text{ (c es una constante)}
+\end{gather*}
+
+
+\subsection{Las sumatorias desde los lenguajes de programación}
+
+Para ver mejor como funciona una sumatoria, podemos pensar cómo se calcularía su resultado con un programa. Si quisiéramos calcular el resultado de la sumatoria $\sum_{i=1}^4{i}$ en Pascal, utilizaríamos:
+
+\begin{verbatim}
+var i, suma:Integer;
+begin
+  suma:=0;
+  for i:=1 to 4 do begin
+    suma:=suma + i;
+  end;
+end.
+\end{verbatim}
+
+Para $\sum_{i=1}^4{(2 \times i) +1}$, sería:
+
+\begin{verbatim}
+var i, suma:Integer;
+begin
+  suma:=0;
+  for i:=1 to 4 do begin
+    suma:=suma + (2*i + 1);
+  end;
+end.
+\end{verbatim}
+
+Finalmente, para $\sum_{i=2}^5{(i-1)}$, sería:
+
+\begin{verbatim}
+var i, suma:Integer;
+begin
+  suma:=0;
+  for i:=2 to 5 do begin
+    suma:=suma + (i-1);
+  end;
+end.
+\end{verbatim}
+
+Los índices de un for son análogos a los de una sumatoria. Lo que le sumamos a la variable \textit{suma} en la iteración $i$ del for es análogo al término $i$ de la sumatoria. Si tuviéramos una función llamada \textbf{termino}, que recibiendo como parámetro al número $i$ nos diera el valor del término $i$, podríamos generalizar estos tres ejemplos de la siguiente manera:
+
+\begin{verbatim}
+var i, suma:Integer;
+begin
+  suma:=0;
+  for i:=1 to 4 do begin
+    suma:=suma + termino(i);
+  end;
+end.
+\end{verbatim}
+
+Viéndolo de esta forma, podemos volver a escribir la notación de una sumatoria genérica como:
+
+\begin{equation*}
+	\sum_{i=valorInicial}^{valorFinal}{termino(i)}
+\end{equation*}
+
+Donde $a_i=termino(i)$ es el resultado de evaluar alguna función en $i$. Recordando, en el primer ejemplo, tuvimos $a_i=i$, en el segundo $a_i=2*i + 1$ y en el tercero $a_i=i-1$.
+
+\subsection{Sumatorias genéricas}
+
+\subsubsection{Términos genéricos}
+Muchas veces queremos hablar de sumatorias de una forma genérica o general, especialmente para probar propiedades de las mismas. En este caso, lo más común es que no nos importe cuál es el término en particular de la sumatoria: podría ser $i$, $i^2$, $i*2+1$, $4$, $2^i$ o lo que sea; no nos interesa. Entonces, es válido escribir la sumatoria como:
+
+\begin{equation*}
+	\sum_{i=1}^4{a_i} = a_1+a_2+a_3+a_4 = ?
+\end{equation*}
+
+Como antes, el valor inicial es $1$, el final $4$, pero el valor del término no está especificado, por eso lo llamamos $a_i$; la $a$ nos dice que el término podría ser cualquier cosa, el subíndice $i$ nos dice que el término depende de $i$. Obviamente, hablar del resultado definitivo de esta sumatoria no tiene mucho sentido ya que no sabemos cuáles son sus términos.
+
+Por supuesto, la $a$ en $a_i$ no tiene nada de especial; podríamos haber escrito la sumatoria anterior como:
+
+\begin{equation*}
+	\sum_{i=1}^4{b_i} = b_1+b_2+b_3+b_4
+\end{equation*}
+
+O:
+
+\begin{equation*}
+	\sum_{i=1}^4{c_i} = c_1+c_2+c_3+c_4
+\end{equation*}
+
+También podemos escribir:
+
+\begin{equation*}
+	\sum_{i=1}^4{(a_i+b_i)} = (a_1+b_1)+(a_2+b_2)+(a_3+b_3)+(a_4+b_4)
+\end{equation*}
+
+En este caso, cada término de la sumatoria es $a_i+b_i$, o sea, la suma de 2 términos que dependen de $i$. Un ejemplo de una sumatoria que tiene esta forma podría ser:
+
+\begin{equation*}
+	\sum_{i=1}^4{(i+i^2)} = (1+1^2)+(2+2^2)+(3+3^2)+(4+4^2)
+\end{equation*}
+
+donde $a_i=i$ y $b_i=i^2$.
+
+\subsubsection{Límites genéricos o arbitrarios}
+
+Casi todas la sumatorias que encontramos para representar tipos de ejecución no tienen un valor final definido, sino que dependen del tamaño del problema que resuelve el algoritmo, como el tamaño de un arreglo, la altura de un árbol, etc. Si utilizamos la letra $n$ para representar dicho tamaño la sumatoria queda como:
+
+\begin{equation*}
+	\sum_{i=1}^n{a_i} = a_1+a_2+\dots+a_{n-1}+a_n = ?
+\end{equation*}
+
+La sumatoria de los primeros $n$ números naturales se puede escribir como:
+
+\begin{equation*}
+	\sum_{i=1}^n{i} = 1+2+...+ (n-1) + n 
+\end{equation*}
+
+
+\subsubsection{Ejemplos de sumatorias genéricas}
+
+\begin{gather*}
+\sum_{i=1}^n{(i+1)} = 2+3+\dots+n+(n+1) \hspace{4em} \sum_{i=1}^n{2^i} = 2^1+\dots+2^{n-1}+2^n \\
+\sum_{i=1}^n{a_i} = a_1+a_2+\dots+a_{n-1}+a_n \hspace{4em} \sum_{i=1}^{2n}{i} = 1+2+\dots+(2(n-1))+2n \\
+\sum_{i=1}^{2n}{a_i} = a_1+a_2+\dots+a_{2(n-1)}+2 a_n \hspace{4em} \sum_{i=1}^{log_2 n}{i} = 1+2+\dots+log_2 n
+\end{gather*}
+
+
+\subsection{Manipulando sumatorias}
+
+De nuevo: la manera más fácil de manipular sumatorias es recordar que solamente estamos sumando números. Por ejemplo, es posible escribir $1+2+3+4$ de muchas formas diferentes:
+
+\begin{gather*}
+\sum_{i=1}^4{i}=\sum_{i=1}^3{i} + 4 =\sum_{i=1}^2{i} + 3 + 4 = \sum_{i=1}^2{i} + \sum_{i=3}^4{i} = \\
+\sum_{i=1}^1{i} + 2 + \sum_{i=3}^4{i} = 1 + 2 + \sum_{i=3}^4{i} = 1 + 2 + \sum_{i=3}^3{i} + 4 = 1 + 2 + 3 + 4 = 10
+\end{gather*}
+
+A continuación veremos algunas de las técnicas más usuales para manipular sumatorias; el objetivo es, siempre, simplificar la sumatoria, llevarla a una expresión que sea fácil de resolver, que ya conozcamos.
+
+
+% \subsubsection{Agregar o quitar términos de una sumatoria}
+% (Rellenar)
+
+
+
+\newcommand{\constante}{\sum_{i=1}^{n}{c a_i} =  c \times \sum_{i=1}^{n}{a_i}}
+\subsubsection{Sacar una constante fuera de una sumatoria ($\constante$)}
+
+Lejos, la operación más común al manipular sumatorias es sacar una constante afuera de la misma. Consideremos:
+
+\begin{equation*}
+\sum_{i=1}^4{2i}
+\end{equation*}
+
+Es fácil resolver esta sumatoria directamente: $ 2 + 4 + 6 + 8 = 20 $. Pero si el límite superior no fuese $4$, si fuera $4000$ o $n$, sería más complicado. Así que, intentemos de otra manera.
+
+\begin{equation*}
+\sum_{i=1}^4{2i} = 2 \times 1 +2 \times 2+2 \times 3+2 \times 4
+\end{equation*}
+
+Podemos sacar factor común con el 2 que está multiplicando a todos los términos, entonces tenemos:
+
+\begin{equation*}
+\sum_{i=1}^4{2i} = 2 \times 1 +2 \times 2+2 \times 3+2 \times 4 = 2 \times (1 + 2 + 3 + 4)
+\end{equation*}
+
+Pero $ 1 + 2 + 3 + 4 $  es una sumatoria que ya conocemos (y a esta altura ya nos aburre bastante): $\sum_{i=1}^4{i}$. Utilizando esto:
+
+\begin{equation*}
+\sum_{i=1}^4{2i} = 2 \times 1 +2 \times 2+2 \times 3+2 \times 4 = 2 \times (1 + 2 + 3 + 4) = 2 \times \sum_{i=1}^4{i}
+\end{equation*}
+
+O sea:
+
+\begin{equation*}
+\sum_{i=1}^4{2i} = 2 \times \sum_{i=1}^4{i}
+\end{equation*}
+
+En este caso, la constante que sacamos afuera fue el $2$, pero esto funciona para cualquier constante, o sea:
+
+\begin{equation*}
+\sum_{i=1}^4{c i} = c \times 1 +c \times 2+c \times 3+c \times 4 = c \times (1 + 2 + 3 + 4) = c \times \sum_{i=1}^4{i}
+\end{equation*}
+
+Y, de hecho, en este caso el término es $c i$, pero podemos hablar de un término más genérico, como $c a_i$, y tendríamos:
+
+\begin{equation*}
+\sum_{i=1}^4{c a_i} = c \times a_1 +c \times a_2+c \times a_3+c \times a_4 = c \times (a_1 + a_2 + a_3 + a_4) = c \times \sum_{i=1}^4{a_i}
+\end{equation*}
+
+Por último, esta idea claramente funciona con límites arbitrarios, dado que si bien tenemos más términos, seguimos simplemente sumando:
+
+\begin{equation*}
+\sum_{i=1}^n{c a_i} = c \times a_1 +c \times a_2+\dots+c \times a_n= c \times (a_1 + a_2 + \dots + a_4) = c \times \sum_{i=1}^n{a_i}
+\end{equation*}
+
+En estos dos últimos pasos, generalizamos nuestro ejemplo ($\sum_{i=1}^4{2i} = 2 \times \sum_{i=1}^4{i}$) utilizando términos y límites arbitrarios; haremos lo mismo cuando veamos el resto de las técnicas.
+
+Muchas veces vamos a necesitar aplicar esta técnica aunque el término de la sumatoria no este escrito exactamente como $c \times a_i$. Por ejemplo,  
+
+\begin{equation*}
+\sum_{i=1}^4{2^{i+3}} = 2^4+ 2^5+ 2^6 + 2^7
+\end{equation*}
+
+tiene como término $2^{i+3}$; sería más fácil si dicho término fuera $2^{i}$. Podemos lograr esto viendo que:
+
+\begin{equation*}
+2^{i+3}= 2^i \times 2^3 
+\end{equation*}
+
+Por ende:
+
+\begin{equation*}
+\sum_{i=1}^4{2^{i+3}} = \sum_{i=1}^4{(2^3 \times 2^i)} = 2^3 \times \sum_{i=1}^4{2^i}
+\end{equation*}
+
+\newcommand{\sumaConstantes}{\sum_{i=1}^{n}{c} = c + c + \dots + c \text{ (n veces) }  = c \times n \text{ (c constante) }}
+\subsubsection{Sumatorias de constantes ($\sumaConstantes$)}
+
+Un caso especial muy importante de la técnica anterior se da cuando tenemos la sumatoria de un término constante, como:
+
+\begin{equation*}
+\sum_{i=1}^{4}{2}= 2+2+2+2
+\end{equation*} 
+
+Podemos encarar la simplificación desde 2 perspectivas similares. Por un lado, $ 2 + 2 + 2 + 2 = 2 \times 4 = 8 $. Generalizando el término a una constante $c$:
+
+\begin{equation*}
+	\sum_{i=1}^{4}{} = c + c + c + c \text{ (4 veces) }= c \times 4
+\end{equation*}
+
+Generalizando el límite:
+
+\begin{equation*}
+	\sum_{i=1}^{n}{c} = c + c + \dots + c \text{ (n veces) }
+\end{equation*}
+
+La otra forma de verlo, quizás un poco más difícil de entender pero también un poco más elegante, es que aplicando la propiedad anterior:
+
+\begin{equation*}
+	\sum_{i=1}^{n}{c} = \sum_{i=1}^{n}{(c \times 1)} = c \sum_{i=1}^{n}{1}
+\end{equation*}
+
+Está claro que $\sum_{i=1}^{n}{1} =n$, ya que simplemente sumamos $n$ veces $1$. Entonces, de esta manera también llegamos a que:
+
+\begin{equation*}
+	\sum_{i=1}^{n}{c} = c \sum_{i=1}^{n}{1} = c \times n
+\end{equation*}
+
+Algo muy importante a notar es que los límites de la sumatoria son los que definen por cuanto multiplicamos a $c$. Por ejemplo,
+
+\begin{gather*}
+	\sum_{i=1}^{3}{c} =  c + c + c = c \times 3 \\
+	\sum_{i=2}^{4}{c} =  c + c + c = c \times 3 \\
+	\sum_{i=2}^{5}{c} =  c + c + c + c = c \times 4 \\
+	\sum_{i=0}^{4}{c} =  c + c + c + c + c= c \times 5 \\
+	\sum_{i=1}^{n-1}{c} =  c + c + \dots + c = c \times (n-1) \\
+	\sum_{i=2}^{n}{c} =  c + c + \dots + c = c \times (n-1) \\
+	\sum_{i=0}^{n}{c} =  c + c + \dots + c = c \times (n+1) \\
+	\sum_{i=0}^{n-1}{c} =  c + c + \dots + c = c \times n \\
+\end{gather*}
+
+En general, si la sumatoria tiene límites $m$ y $n$ constantes, tenemos:
+
+\begin{equation}
+\sum_{i=m}^n{c} = ((n-m) +1) \times c
+\end{equation}
+
+
+\newcommand{\separar}{\sum_{i=1}^n{a_i+b_i}=\sum_{i=1}^n{ a_i} + \sum_{i=1}^n{b_i} }
+\subsubsection{Separar sumatorias ($\separar$)}
+
+
+Supongamos que tenemos una sumatoria como:
+
+\begin{equation*}
+\sum_{i=1}^3{i+2^i} = (1+2^1) + (2+2^2) + (3+2^3)
+\end{equation*}
+
+Cada término es $a_i=i+2^i$; sería más fácil si pudiésemos tener dos sumatorias, para tratar el $i$ y el $2^i$ por separado. Dado que del lado derecho de la ecuación sólo estamos sumando, podemos reordenar los términos:
+
+\begin{equation*} (1+2^1) + (2+2^2) + (3+2^3) = (1+2+3) + (2^1+2^2+2^3) =  \sum_{i=1}^3{i} + \sum_{i=1}^3{2^i}
+\end{equation*}
+
+Y entonces:
+
+\begin{equation*}
+\sum_{i=1}^3{i+2^i} = \sum_{i=1}^3{i} + \sum_{i=1}^3{2^i}
+\end{equation*}
+
+Es posible aplicar esta técnica siempre que nuestro término $a_i$ sea la suma de dos (o varias) cosas. La recordamos como:
+
+\begin{equation*}
+\separar
+\end{equation*}
+
+\newcommand{\cortado}{\sum_{i=1}^n{a_i} = \sum_{i=1}^k{a_i} + \sum_{i=k+1}^n{a_i}}
+\newcommand{\completadoArriba}{\sum_{i=1}^k{a_i} = \sum_{i=1}^n{a_i} - \sum_{i=k+1}^n{a_i}}
+\newcommand{\completadoAbajo}{\sum_{i=k}^n{a_i} = \sum_{i=1}^n{a_i} - \sum_{i=1}^{k-1}{a_i}}
+
+\subsubsection{Cortar sumatorias ($\completadoArriba$, $\completadoAbajo$ )}
+
+Es fácil ver que:
+
+\begin{equation*}
+1+2+3+4 = (1+2) + (3+4)
+\end{equation*}
+
+Siguiendo esa idea, y recordando que con una sumatoria sólo estamos sumando, vemos que:
+
+\begin{equation*}
+\sum_{i=1}^4{i} = 1+2+3+4 = (1+2) + (3+4) = (\sum_{i=1}^2{i}) + (\sum_{i=3}^4{i}) 
+\end{equation*} 
+
+Generalizando, tenemos:
+\begin{equation*}
+\cortado
+\end{equation*}
+
+Por otro lado, como $0=(3+4) -(3+4)$
+\begin{equation*}
+1+2 = (1+2) + (3+4) -(3+4) = (1+2+3+4) - (3+4)
+\end{equation*}
+
+Entonces
+\begin{equation*}
+\sum_{i=1}^2{i} = 1+2 = (1+2+3+4) - (3+4) = (\sum_{i=1}^4{i}) - (\sum_{i=3}^4{i})
+\end{equation*}
+
+Generalizando:
+\begin{equation*}
+\completadoArriba
+\end{equation*}
+
+
+Por último,
+\begin{equation*}
+3+4 = (3+4) + (1+2) - (1+2) = (1+2+3+4) - (1+2)
+\end{equation*}
+
+Entonces
+\begin{equation*}
+\sum_{i=3}^4{i} = 3+4 = (1+2+3+4) - (1+2) = (\sum_{i=1}^4{i}) - (\sum_{i=1}^2{i})
+\end{equation*}
+
+Generalizando:
+\begin{equation*}
+\completadoAbajo
+\end{equation*}
+
+
+% \begin{equation*}
+% \sum_{i=1}^n{a_i \times b_i} \not= \sum_{i=1}^n{ a_i} \times \sum_{i=1}^n{b_i}\\
+% \end{equation*}
+
+\subsection{Series y sumatorias}
+Generalmente no distinguimos entre series y sumatorias, pero técnicamente la sumatoria es solamente la \textit{notación} para escribir \textbf{series}. Intuitivamente, una serie es simplemente la suma de ciertos términos. Si bien esto suena muy parecido a una sumatoria, la diferencia, entonces, es similar a la diferencia entre la sintaxis del for, que varía dependiendo del lenguaje, y el concepto del for o la iteración. La sintaxis del for sirve para darle una representación al concepto del for, de la misma forma que una sumatoria sirve para representar una serie.
+
+Podemos considerar dos tipos de series, las finitas y las infinitas. Las que utilizamos para resolver los tiempos de ejecución pertenecen al grupo de las  \textbf{series finitas}, donde siempre sumamos una cantidad finita de términos. En este caso, podemos ver a las series simplemente como una suma de números.
+
+Cuando la cantidad de términos a sumar es \textbf{infinita}, por ejemplo, $4+4+4+4+4+\dots = \sum_{i=1}^{\infty}{4}$, estamos lidiando con una \textbf{serie infinita}, entonces las propiedades usuales que vimos en esta sección no funcionan siempre, y no podemos ver a la sumatoria simplemente como una forma de escribir sumas de manera más sencilla. Por ejemplo, la serie $\sum_{i=1}^{\infty}{(-1)^n}= (-1) + 1 + (-1) + 1 + \dots$ no da 0, sino que está indefinida, o sea, no es \textbf{sumable}. 
+
+\subsection{Resumen de propiedades}
+
+\begin{gather*}
+\sum_{i=1}^n{c a_i}= c \times \sum_{i=1}^n{ a_i}\\
+\sum_{i=1}^n{c}=(n-1+1) \times c= n \times c\\
+\sum_{i=1}^n{a_i+b_i}=\sum_{i=1}^n{ a_i} + \sum_{i=1}^n{b_i}\\
+\sum_{i=1}^n{a_i}=\sum_{i=1}^k{a_i} + \sum_{i=k+1}^n{b_i}\\
+\sum_{i=1}^k{a_i}=\sum_{i=1}^n{a_i} - \sum_{i=k+1}^n{b_i}\\
+\sum_{i=k}^n{a_i}=\sum_{i=1}^n{a_i} - \sum_{i=1}^{k-1}{b_i}\\
+\sum_{i=1}^n{a_i \times b_i} \not= \sum_{i=1}^n{ a_i} \times \sum_{i=1}^n{b_i}\\
+\sum_{i=1}^n{a_i^2} \not= (\sum_{i=1}^n{ a_i})^2
+\end{gather*}
+
+\subsection{Resumen de fórmulas para simplificar algunas sumatorias comunes}
+
+\begin{align*}
+\sum_{i=1}^{n}{i} &=  \frac{n (n+1)}{2}\\
+\sum_{i=1}^{n}{i^2} &=  \frac{n (n+1)(2n+1)}{6}\\
+\sum_{i=1}^{n}{i^3} &=  (\frac{n (n+1)}{2})^2\\
+\sum_{i=1}^{n}{i^4}&=  \frac{n (n+1) (2n+1)(3n^2+ 3n-1)}{30}
+\end{align*}
+
+
+\end{document}
